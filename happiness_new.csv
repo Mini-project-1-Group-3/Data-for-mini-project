@@ -1,4 +1,4 @@
-﻿Country name,Year,Log GDP per capita,Social support,Healthy life expectancy at birth,Freedom to make life choices,Generosity
+﻿country_id,year,log_gdp,social_support,life_expectancy,freedom,generosity
 Afghanistan,2008,7.35,0.45,50.5,0.72,0.17
 Afghanistan,2009,7.51,0.55,50.8,0.68,0.19
 Afghanistan,2010,7.61,0.54,51.1,0.6,0.12
