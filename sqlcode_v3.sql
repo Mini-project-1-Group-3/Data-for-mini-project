@@ -1,17 +1,14 @@
-DROP TABLE IF EXISTS hapiness;
+DROP TABLE IF EXISTS happiness, dim_country, dim_series, gdp, indicators;
 
-CREATE TABLE IF NOT EXISTS hapiness (
-	"Country name" VARCHAR(255),
-	year INT,
-	"Life Ladder" NUMERIC(6,3),
-	"Log GDP per capita" NUMERIC(6,3),
-	"Social support" NUMERIC(6,3),
-	"Healthy life expectancy at birth" NUMERIC(6,3),
-	"Freedom to make life choices" NUMERIC(6,3),
-	"Generosity" NUMERIC(6,3),
-	"Perceptions of corruption" NUMERIC(6,3),
-	"Positive affect" NUMERIC(6,3),
-	"Negative affect" NUMERIC(6,3)
+
+CREATE TABLE IF NOT EXISTS happiness (
+	"country_id" VARCHAR(255),
+	"year" INT,
+	"log_gdp" NUMERIC(6,3),
+	"social_support" NUMERIC(6,3),
+	"life_expectancy" NUMERIC(6,3),
+	"freedom" NUMERIC(6,3),
+	"Generosity" NUMERIC(6,3)
 );
 
 
@@ -27,12 +24,88 @@ DELIMITER ';'
 CSV Header; */
 
 
-COPY hapiness
+COPY happiness
 FROM PROGRAM 'curl -s https://raw.githubusercontent.com/Mini-project-1-Group-3/Data-for-mini-project/refs/heads/main/happiness_new.csv'
 DELIMITER ','
 CSV Header;
 
 
+-- ALTER TABLE hapiness
+-- ADD COLUMN happiness_id SERIAL PRIMARY KEY;
+
+
+CREATE TABLE IF NOT EXISTS dim_country (
+	"country_name" VARCHAR(255),
+	"country_code" VARCHAR(3),
+	"currency_unit" VARCHAR(100),
+	"region" VARCHAR(100),
+	"income_group" VARCHAR(100)
+);
+
+
+COPY dim_country
+FROM PROGRAM 'curl -s https://raw.githubusercontent.com/Mini-project-1-Group-3/Data-for-mini-project/refs/heads/main/country_table_data.csv'
+DELIMITER ';'
+CSV Header;
+
+
+CREATE TABLE IF NOT EXISTS dim_series (
+	"indicator_id" VARCHAR(255),
+	"topic" VARCHAR(255),
+	"indicator_name" TEXT,
+	"long_definition" TEXT,
+	"unit_of_measure" VARCHAR(100),
+	"periodicity" VARCHAR(100),
+	"base_period" VARCHAR(100),
+	"aggregation_method" VARCHAR(100)
+);
+
+
+COPY dim_series
+FROM PROGRAM 'curl -s https://raw.githubusercontent.com/Mini-project-1-Group-3/Data-for-mini-project/refs/heads/main/series_sorted.csv'
+DELIMITER ';'
+CSV Header;
+
+
+CREATE TABLE IF NOT EXISTS indicators (
+	country_name VARCHAR(255),
+	country_code VARCHAR(3),
+	indicator_name TEXT,
+	indicator_code VARCHAR(100),
+	year INT,
+	value NUMERIC(50,30)
+);
+
+COPY indicators
+FROM PROGRAM 'curl -s https://raw.githubusercontent.com/Mini-project-1-Group-3/Data-for-mini-project/refs/heads/main/indicators_sorted.csv'
+DELIMITER ';'
+CSV Header;
+
+CREATE TABLE IF NOT EXISTS gdp (
+	country VARCHAR(255),
+	year INT,
+	value NUMERIC(20,15)
+);
+
+
+COPY gdp
+FROM PROGRAM 'curl -s https://raw.githubusercontent.com/Mini-project-1-Group-3/Data-for-mini-project/refs/heads/main/debt_gdp_sorted.csv'
+DELIMITER ';'
+CSV Header;
+
 
 SELECT *
 FROM hapiness;
+
+SELECT *
+FROM dim_country;
+
+SELECT *
+FROM dim_series;
+
+
+SELECT *
+FROM indicators;
+
+SELECT *
+FROM gdp;
