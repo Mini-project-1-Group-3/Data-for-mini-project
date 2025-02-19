@@ -1,0 +1,23 @@
+-- Create the date dimension table
+CREATE TABLE date_dimension (
+    date_id INT PRIMARY KEY,
+    year INT NOT NULL
+);
+
+-- Populate the table with years from 2000 to 2030
+WITH RECURSIVE years AS (
+    SELECT 2000 as year
+    UNION ALL
+    SELECT year + 1
+    FROM years
+    WHERE year < 2030
+)
+INSERT INTO date_dimension (date_id, year)
+SELECT 
+    -- Generate date_id in format YYYY
+    year as date_id,
+    year
+FROM years;
+
+-- Create an index on the year column for better query performance
+CREATE INDEX idx_date_dimension_year ON date_dimension(year);
