@@ -1,0 +1,56 @@
+TRUNCATE TABLE fact_indicators;
+
+-- Insert data from indicators table into fact_indicators
+INSERT INTO fact_indicators (country_name, country_id, indicator_id, date_id, value)
+SELECT 
+    i.country_name,
+    dc.country_id,
+    i.indicator_code,
+    dd.date_id,
+    i.value
+FROM indicators i
+JOIN dim_country dc ON i.country_name = dc.country_name
+JOIN dim_date dd ON i.year = dd.year;
+
+-- Add happiness metrics
+INSERT INTO fact_indicators (country_name, country_id, indicator_id, date_id, value)
+SELECT 
+    h.country,
+    h.country_id,
+    'HAPPINESS_LOG_GDP' as indicator_id,
+    dd.date_id,
+    h.log_gdp as value
+FROM dim_happiness h
+JOIN dim_date dd ON h.year = dd.year
+WHERE h.log_gdp IS NOT NULL
+UNION ALL
+SELECT 
+    h.country,
+    h.country_id,
+    'HAPPINESS_SOCIAL_SUPPORT' as indicator_id,
+    dd.date_id,
+    h.social_support as value
+FROM dim_happiness h
+JOIN dim_date dd ON h.year = dd.year
+WHERE h.social_support IS NOT NULL;
+-- Add more happiness metrics as needed
+
+-- Add GDP data
+INSERT INTO fact_indicators (country_name, country_id, indicator_id, date_id, value)
+SELECT 
+    g.country,
+    g.country_id,
+    'GDP_VALUE' as indicator_id,
+    dd.date_id,
+    g.value
+FROM dim_gdp g
+JOIN dim_date dd ON g.year = dd.year
+WHERE g.value IS NOT NULL;
+
+-- Create indexes for better performance
+CREATE INDEX idx_fact_indicators_country_id ON fact_indicators(country_id);
+CREATE INDEX idx_fact_indicators_date_id ON fact_indicators(date_id);
+CREATE INDEX idx_fact_indicators_indicator_id ON fact_indicators(indicator_id);
+Last edited just now
+
+
